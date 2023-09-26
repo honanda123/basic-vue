@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap">
+    <style>
+        body {
+            margin: 5%;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .active {
+            background: turquoise;
+            border: 0;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <header>
+            <img src="image/kfc.png" width="80" alt="">
+            <!-- Menampilkan data dengan {{}} atau template syntax -->
+            <!-- variabel tidak dapat diperbaruhi dengan menambahkan atribut v-once dalam tag html-->
+            <!-- Directive merupakan fungsi yang disediakan vue js dan di tempelkan ke elemen htmldan penulisannya selalu diawali 'v-'-->
+
+            <h1 v-text="name.toUpperCase()"></h1>
+            <input type="text" v-model="name">
+            <p>
+                <input type="text" placeholder="Nama Kelas" v-on:keyup.enter = "submit" v-model="newKelas">
+            </p>
+
+            <p>
+            <h3>Daftar Kelas({{kelas.length}})</h3>
+            <!-- V-if dan v-else harus dipastikan sejajar dan selalu bersama -->
+            <!-- template hanya sebagai pembungkus parent / mengelompokan beberapa elemen -->
+            <!-- elemen Template tidak akan muncul dalam DOM -->
+            <template v-if="kelas.length >= 1">
+                <ul>
+                    <!-- jika panjang kelas lebih dari 1 maka tampilkan : -->
+                    <li v-for="(k, index) of kelas">{{index+1}} - {{k}}</li>
+                </ul>
+            </template>
+            <li v-else>Kelas masih kosong</li>
+
+            <h3>Looping 1 - 5</h3>
+            <ul>
+                <li v-for="x in 5">{{x}}</li>
+            </ul>
+
+
+            <h3>Cari Bilangan Genap</h3>
+            <ul>
+                <li v-for="n in cariBilanganGenap(numbers)">{{n}}</li>
+            </ul>
+            <p>{{kelas}}</p>
+            <div>
+                <label><input type="checkbox" value="React" v-model="kelas">React</label>
+                <label><input type="checkbox" value="Vuejs" v-model="kelas">Vuejs</label>
+                <label><input type="checkbox" value="Angular" v-model="kelas">Angular</label>
+            </div>
+            </p>
+
+
+            <p v-html="link"></p>
+            <h1 v-text="bilangan"></h1>
+            <p>Bilangan ini adalah bilangan : {{ infoBilangan }} </p>
+
+            <p>
+                <button v-on:click="handleClick()">Tambah Bilangan</button>
+            </p>
+            <p>
+                <!-- atau bisa juga menggunakan v-on:click -->
+                <button @click="kurangi()">Kurangi Bilangan</button>
+            </p>
+            <!-- <p>Bilangan ini adalah bilangan : {{ infoBilangan }} </p> -->
+            <img v-bind:src="gambar" alt="" width="500">
+            <p>The Progressive JS Framework</p>
+
+            <!-- <button v-bind:class="{active:menu === 'home'}" v-on:click="menu = 'home' ">Home</button>
+            <button v-bind:class="{active:menu === 'about'}" v-on:click="menu = 'about' ">About</button>
+            <button v-bind:class="{active:menu === 'blog'}" v-on:click="menu = 'blog' ">Blog</button> -->
+
+            <a v-bind:class="{active:menu === 'home'}" href="#" v-on:click.prevent="gantiMenu('home')">Home</a>
+            <a v-bind:class="{active:menu === 'about'}" href="#" v-on:click.prevent="gantiMenu('about')">About</a>
+            <a v-bind:class="{active:menu === 'blog'}" href="#" v-on:click.prevent="gantiMenu('blog')">Blog</a>
+
+
+        </header>
+        <footer id="footer">
+            <p>Copyright 2023</p>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script>
+        // inisialisasi objek data
+        // const member = {
+        //     name: 'Doremi',
+        //     pesan: "Hello World",
+        //     isActive : true
+        // }
+        
+        //inisiasi objek vue
+        const vm = new Vue({
+            /*
+            menentukan elemen yang akan menjadi sebagai sistem komponen / property, value nya string, string elektor atau elemen html lainnya
+            selektor string bisa class, tag / id
+            id app sebagai route elemen
+            class dengan = . dan id = #
+            */
+            el: '#app',
+            /*
+            data dapat diisi dengan tipe data string, 
+            boolean, number, array atau objek
+            */
+            data: {
+                name: 'Doremi',
+                pesan: "Hello World",
+                isActive: true,
+                qty: 3,
+                namaDepan: 'nanda',
+                namaBelakang: 'april',
+                bilangan: 1,
+                link: '<a href="">kelas.baledemy</a>',
+                gambar: 'image/coca-cola.png',
+                menu: 'home',
+                kelas: ['Golang', 'PHP'],
+                numbers: [1, 2, 3, 4, 5], 
+                newKelas : ""
+
+            },
+            methods: {
+                getName: function () {
+                    return 'Hello, ' + this.name
+                },
+                ubahNama: function (namaBaru) {
+                    this.name = namaBaru //this mengacu pada isi dalam objek Vue/ vm
+                    return this.getName() //return dengan function lain
+                },
+                handleClick: function () {
+                    this.bilangan++
+                    this.gambar = 'image/snickers.png'
+                },
+                kurangi: function () {
+                    return this.bilangan--
+                },
+                cariBilanganGenap: function (data) {
+                    return data.filter(i => {
+                        return i % 2 == 0
+                    })
+                }, 
+                gantiMenu : function(menuBaru){
+                    // memblokir elemen html
+                    // event.preventDefault()
+                    // console.log(event)
+                    this.menu = menuBaru
+                }, 
+                submit : function(){
+                    // let text = event.target.value
+                    // console.log(text)
+                    // push input data ke index terakhir
+                    // this.kelas.push(text)
+                    // umshift menginput data ke index 0
+                    this.kelas.unshift(this.newKelas)
+                    this.newKelas = ""
+                    // mengosongkan input text
+                    // event.target.value = ""
+                }
+
+            },
+            // Computed property / definisi variabel dalam vue js
+            computed: {
+                /*
+                nama property yang sebenarnya fungsi, 
+                nilai property tergantung property lain 
+                misal property A diubah maka property lain 
+                yang berhubungan ikut berubah. 
+                jangan lupa pakai 'this' untuk memakai 
+                property di dalam function
+                Sederhananya computed property ini berfungsi
+                menyederhanakan statement atau argumen. 
+                perbedaanya dengan method adalah 
+                Computed Properties digunakan untuk menangani 
+                kalkulasi atau penghitungan informasi yang lebih 
+                kompleks atau rumit untuk dapat ditampilkan pada Template
+                computed itu hanya ke ngedisplay data. 
+                fungsi/method untuk melakukan aksi
+                */
+                totalBayar: function () {
+                    return this.qty * 10000
+                },
+                namaLengkap: function () {
+                    return this.namaDepan + this.namaBelakang
+                },
+                infoBilangan: function () {
+                    if (this.bilangan % 2 == 0) {
+                        return "Genap"
+                    } else {
+                        return "Ganjil"
+                    }
+
+                }
+
+            }
+
+
+
+
+        })
+
+    </script>
+</body>
+
+</html>
+// <!--catatan bahwa v-show tidak mendukung elemen <template>, begitu pula tidak bekerja dengan v-else.-->

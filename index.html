@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap">
+    <style>
+        body {
+            margin: 5%;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .active {
+            background: turquoise;
+            border: 0;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <header-component nama="JavaScript" gambar="image/coca-cola.png"></header-component>
+        <nav>
+            <router-link to="/">Home</router-link>
+            <router-link to="/about">About</router-link>
+            <router-link to="/kelas">Kelas</router-link>
+
+        </nav>
+        <main>
+            <!-- <kelas v-bind:items="kelas" v-on:submitkelas="submitkelas" v-on:hapuskelas="hapuskelas"></kelas> -->
+            <!-- <home></home> -->
+            <!-- router view akan mencocokan komponen apa yang akan ditampilkan sesuai jalur rute url -->
+
+            <router-view v-bind:items="kelas" v-on:submitkelas="submitkelas" v-on:hapuskelas="hapuskelas"></router-view>
+        </main>
+
+        <footer-component>
+            <p>Copyright 2023 - Ananda Apriliani</p>
+        </footer-component>
+    </div>
+    <script src="https://unpkg.com/vue@2.4.4/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@3/dist/vue-router.js"></script>
+    <script type="module">
+        import { v4 as uuidv4 } from 'https://jspm.dev/uuid'
+        // console.log(uuidv4()) // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+    </script>
+    <script>
+        const Home = {
+            template: '<div>Home</div>'
+        }
+        const About = {
+            template: '<div>About</div>'
+        }
+        const v4options = {
+            random: [
+                0x10, 0x91, 0x56, 0xbe, 0xc4, 0xfb, 0xc1, 0xea, 0x71, 0xb4, 0xef, 0xe1, 0x67, 0x1c, 0x58, 0x36,
+            ],
+        }
+        const kelas = {
+            props: ['items'],
+            template: `
+                <div>
+                    <h3>Tambah Kelas</h3>
+                    <form v-on:submit.prevent= "submitkelas">
+                        <p><input type="text" v-model="kelas.judul" placeholder="Nama Kelas"></p>
+
+                        <div class ="input-group">
+                            <label>Deskripsi : </label><br>
+                            <textarea v-model="kelas.deskripsi"></textarea>
+                        </div>
+                        <div class ="input-group">
+                            <p><img :src ="previewimg" v-if="previewimg"/></p>
+                            <label>Masukkan Gambar</label><br>
+                            <input type ="file" ref="gambar" v-on:change="upload"/>
+                        </div>
+                        <button type="submit">Submit</button>
+                    </form>
+
+                    <hr>
+                    <h3>Daftar Kelas({{items.length}})</h3>
+                    <template v-if="items.length">
+                        <ul>
+                            <li v-for="(k, index) of items">{{index+1}} - {{k.judul}}
+                                <a href="" v-on:click.prevent="$emit('hapuskelas',k.id)">Hapus</a>
+                            </li>
+                        </ul>
+                    </template>
+                    <li v-else>Kelas kosong</li>
+                </div>
+            `,
+            data: function () {
+                return {
+                    kelas: {
+                        judul: '',
+                        deskripsi: '',
+                        gambar: ''
+                    },
+                    previewimg: ""
+                }
+            },
+            methods: {
+                submitkelas: function () {
+                    // console.log(this.kelas)
+                    const data = {
+                        id: uuidv4(),
+                        judul: this.kelas.judul,
+                        deskripsi: this.kelas.deskripsi,
+                        gambar: this.kelas.gambar
+                    }
+                    this.$emit('submitkelas', data)
+                    this.kelas.judul = ""
+                    this.kelas.deskripsi = ""
+                    this.kelas.gambar = ""
+                    this.previewimg = ""
+                    this.$refs.gambar.value = ""
+                },
+                upload: function (event) {
+                    // console.log(event.target.files[0].name)
+                    const namaGambar = event.target.files[0].name
+                    this.kelas.gambar = namaGambar
+                    this.previewimg = URL.createObjectURL(event.target.files[0])
+                }
+            }
+        }
+        const routes = [
+            { path: '/', component: Home }, //root halaman
+            { path: '/about', component: About },
+            { path: '/kelas', component: kelas }
+        ]
+        const router = new VueRouter({
+            mode: `history`, //menghilangkan # di url 
+            routes // short for `routes: routes`
+        })
+        // component didaftarkan / ditaruh sebelum instan objek dari vuenya
+        Vue.component('header-component', {
+            props: ['nama', 'gambar'],
+            template: `
+                <header>
+                    <img :src="gambar" width="300" alt="">
+                    <p>{{'Hello, ' +nama }}</p>
+                </header>
+            `,
+            data: function () {
+                return {
+                    pesan: 'Hello, Component!'
+                }
+            }
+        })
+
+        Vue.component('footer-component', {
+            template: `
+                <footer id="footer">
+                    <slot></slot>
+                </footer>
+            `
+        })
+        Vue.component('kelas', {
+
+        })
+
+
+        //inisiasi objek vue
+        const vm = new Vue({
+            el: '#app',
+            router,
+            components: {
+                'home': Home
+            },
+            data: {
+                // Array in object
+                kelas: [
+                    { id: 1, judul: 'Coca-Cola', deskripsi: 'Minuman Bersoda', gambar: 'coca-cola.png' },
+                    { id: '2', judul: 'KFC', deskripsi: 'Jagonya Ayam', gambar: 'kfc.png' }],
+                newKelas: ""
+            },
+            methods: {
+                hapuskelas: function (id) {
+                    // console.log(id)
+                    // this.kelas.splice(id, 1)
+                    // metode filter 
+                    this.kelas = this.kelas.filter(k => k.id != id)
+                },
+                submitkelas: function (data) {
+                    // const text = data.target.value
+                    // console.log(data)
+                    this.kelas.push(data)
+
+                }
+
+
+            },
+            // Computed property / definisi variabel dalam vue js
+            computed: {
+
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>

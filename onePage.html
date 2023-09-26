@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand&display=swap">
+    <style>
+        body {
+            margin: 5%;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .active {
+            background: turquoise;
+            border: 0;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <header-component nama="JavaScript" gambar="image/coca-cola.png"></header-component>
+        <header-component nama="Snickers" gambar="image/snickers.png"></header-component>
+        <main>
+            <div id="app">
+                <button><router-link to="/github">github</router-link></button>
+                <router-view></router-view>
+            </div>
+        </main>
+
+        <footer-component>
+            <p>Copyright 2023 - Ananda Apriliani</p>
+        </footer-component>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://unpkg.com/vue-router@3/dist/vue-router.js"></script>
+    <script>
+        const github = { template: '<div>github</div>' }
+        const routes = [
+            {
+                path: '/github',
+                beforeEnter() { location.href = 'http://github.com' },
+                component: github
+            }]
+        const router = new VueRouter({
+            routes // short for `routes: routes`
+        })
+
+        //inisiasi objek vue
+        const vm = new Vue({
+            el: '#app',
+            router
+        })
+
+    </script>
+</body>
+
+</html>
